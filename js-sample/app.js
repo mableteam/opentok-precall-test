@@ -1,10 +1,4 @@
-/**
-* Replace these with your OpenTok API key, a session ID for a routed OpenTok session,
-* and a token that has the publish role:
-*/
-var API_KEY = '';
-var SESSION_ID = '';
-var TOKEN = '';
+/* global OT:false */
 
 var TEST_TIMEOUT_MS = 15000; // 15 seconds
 
@@ -22,8 +16,8 @@ var testStreamingCapability = function(subscriber, callback) {
   performQualityTest({subscriber: subscriber, timeout: TEST_TIMEOUT_MS}, function(error, results) {
     console.log('Test concluded', results);
 
-    var audioVideoSupported = results.video.bitsPerSecond > 250000 &&
-      results.video.packetLossRatioPerSecond < 0.03 &&
+    var audioVideoSupported = results.video.bitsPerSecond > 200000 &&
+      results.video.packetLossRatioPerSecond < 0.1 &&
       results.audio.bitsPerSecond > 25000 &&
       results.audio.packetLossRatioPerSecond < 0.05;
 
@@ -144,7 +138,23 @@ compositeOfCallbacks(
   }
 );
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function(){
+  // var serverUrl = 'https://api.mable.co.uk';
+  var serverUrl = 'http://labs.benbru.com:2000'
+  $.ajax({
+    type:'GET',
+    url:serverUrl + '/session/test',
+    dataType:'json',
+    contentType:'application/json',
+    processData:false,
+    success: function(data){
+      init(data.apiKey, data.sessionId, data.token);
+    }
+  });
+  
+});
+
+function init(API_KEY, SESSION_ID, TOKEN){
   var container = document.createElement('div');
   container.className = 'container';
 
@@ -163,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
   statusContainerEl = document.getElementById('status_container');
   statusMessageEl = statusContainerEl.querySelector('p');
   statusIconEl = statusContainerEl.querySelector('img');
-});
+}
 
 // Helpers
 function setText(el, text) {
